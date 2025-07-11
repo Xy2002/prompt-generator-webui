@@ -218,7 +218,7 @@ function TestPageContent() {
 
             <div>
               <p className="text-sm font-medium mb-2">提示模板:</p>
-              <div className="bg-muted p-3 rounded-lg max-h-40 overflow-y-auto">
+              <div className="bg-muted p-3 rounded-lg max-h-40 overflow-y-auto custom-scrollbar">
                 <pre className="whitespace-pre-wrap text-xs">
                   {selectedPrompt.template}
                 </pre>
@@ -287,7 +287,7 @@ function TestPageContent() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="bg-muted p-4 rounded-lg min-h-[200px]">
+              <div className="bg-muted p-4 rounded-lg min-h-[200px] max-h-[400px] overflow-y-auto custom-scrollbar">
                 <pre className="whitespace-pre-wrap text-sm">
                   {isLoading ? "正在生成中..." : 
                    messages.find(m => m.role === 'assistant')?.content || ""}
