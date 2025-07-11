@@ -17,7 +17,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { loadSavedPrompts, deleteSavedPrompt, extractVariablesFromTemplate, type SavedPrompt } from "@/lib/storage";
-import { Trash2, TestTube, Calendar } from "lucide-react";
+import { Trash2, TestTube, Calendar, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 export default function HistoryPage() {
@@ -31,6 +31,16 @@ export default function HistoryPage() {
     deleteSavedPrompt(id);
     setSavedPrompts(loadSavedPrompts());
     toast.success("提示模板已删除");
+  };
+
+  const handleCopyTemplate = async (template: string) => {
+    try {
+      await navigator.clipboard.writeText(template);
+      toast.success("提示模板已复制到剪贴板");
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+      toast.error("复制失败，请手动复制");
+    }
   };
 
   const formatDate = (isoString: string) => {
@@ -62,7 +72,7 @@ export default function HistoryPage() {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-lg line-clamp-2">
+                    <CardTitle className="text-lg line-clamp-1">
                       {prompt.task}
                     </CardTitle>
                     <CardDescription className="flex items-center gap-2 mt-2">
@@ -71,8 +81,17 @@ export default function HistoryPage() {
                     </CardDescription>
                   </div>
                   <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleCopyTemplate(prompt.template)}
+                      className="cursor-pointer"
+                    >
+                      <Copy className="h-4 w-4" />
+                      复制
+                    </Button>
                     <Link href={`/test?id=${prompt.id}`}>
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" className="cursor-pointer">
                         <TestTube className="h-4 w-4 mr-1" />
                         测试
                       </Button>
@@ -127,12 +146,9 @@ export default function HistoryPage() {
                   })()}
                   <div>
                     <p className="text-sm font-medium mb-2">提示模板:</p>
-                    <div className="bg-muted p-3 rounded-lg max-h-40 overflow-y-auto">
+                    <div className="bg-muted p-3 rounded-lg max-h-40 overflow-y-auto relative group custom-scrollbar">
                       <pre className="whitespace-pre-wrap text-xs">
-                        {prompt.template.length > 500 
-                          ? prompt.template.substring(0, 500) + "..."
-                          : prompt.template
-                        }
+                        {prompt.template}
                       </pre>
                     </div>
                   </div>
