@@ -268,7 +268,7 @@ export default function Home() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="bg-muted p-4 rounded-lg">
+                <div className="bg-muted p-4 rounded-lg max-h-[400px] overflow-y-auto custom-scrollbar">
                   <pre className="whitespace-pre-wrap text-sm">
                     {generateChat.isLoading 
                       ? generateChat.messages.find(m => m.role === 'assistant')?.content || "开始生成..."
