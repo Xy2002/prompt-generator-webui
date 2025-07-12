@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,9 +19,11 @@ import {
 import { loadSavedPrompts, deleteSavedPrompt, extractVariablesFromTemplate, type SavedPrompt } from "@/lib/storage";
 import { Trash2, TestTube, Calendar, Copy } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 export default function HistoryPage() {
   const [savedPrompts, setSavedPrompts] = useState<SavedPrompt[]>([]);
+  const t = useTranslations('HistoryPage');
 
   useEffect(() => {
     setSavedPrompts(loadSavedPrompts());
@@ -30,16 +32,16 @@ export default function HistoryPage() {
   const handleDelete = (id: string) => {
     deleteSavedPrompt(id);
     setSavedPrompts(loadSavedPrompts());
-    toast.success("提示模板已删除");
+    toast.success(t('templateDeleted'));
   };
 
   const handleCopyTemplate = async (template: string) => {
     try {
       await navigator.clipboard.writeText(template);
-      toast.success("提示模板已复制到剪贴板");
+      toast.success(t('templateCopied'));
     } catch (err) {
       console.error("Failed to copy text: ", err);
-      toast.error("复制失败，请手动复制");
+      toast.error(t('copyFailed'));
     }
   };
 
@@ -50,18 +52,18 @@ export default function HistoryPage() {
   return (
     <div className="container mx-auto p-4 max-w-6xl">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">历史记录</h1>
+        <h1 className="text-3xl font-bold mb-2">{t('title')}</h1>
         <p className="text-muted-foreground">
-          查看您生成的所有提示模板，点击测试按钮可以跳转到测试页面
+          {t('description')}
         </p>
       </div>
 
       {savedPrompts.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <p className="text-muted-foreground mb-4">还没有保存的提示模板</p>
+            <p className="text-muted-foreground mb-4">{t('noTemplates')}</p>
             <Link href="/">
-              <Button>开始生成提示模板</Button>
+              <Button>{t('startGenerating')}</Button>
             </Link>
           </CardContent>
         </Card>
@@ -88,12 +90,12 @@ export default function HistoryPage() {
                       className="cursor-pointer"
                     >
                       <Copy className="h-4 w-4" />
-                      复制
+                      {t('copy')}
                     </Button>
                     <Link href={`/test?id=${prompt.id}`}>
                       <Button size="sm" variant="outline" className="cursor-pointer">
                         <TestTube className="h-4 w-4 mr-1" />
-                        测试
+                        {t('test')}
                       </Button>
                     </Link>
                     <AlertDialog>
@@ -108,18 +110,18 @@ export default function HistoryPage() {
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>确认删除</AlertDialogTitle>
+                          <AlertDialogTitle>{t('confirmDelete')}</AlertDialogTitle>
                           <AlertDialogDescription>
-                            确定要删除这个提示模板吗？此操作无法撤销。
+                            {t('deleteConfirmation')}
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>取消</AlertDialogCancel>
+                          <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleDelete(prompt.id)}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           >
-                            删除
+                            {t('delete')}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -133,7 +135,7 @@ export default function HistoryPage() {
                     const variables = extractVariablesFromTemplate(prompt.template);
                     return variables.length > 0 && (
                       <div>
-                        <p className="text-sm font-medium mb-2">变量:</p>
+                        <p className="text-sm font-medium mb-2">{t('variables')}:</p>
                         <div className="flex flex-wrap gap-1">
                           {variables.map((variable, index) => (
                             <Badge key={index} variant="secondary">
@@ -145,7 +147,7 @@ export default function HistoryPage() {
                     );
                   })()}
                   <div>
-                    <p className="text-sm font-medium mb-2">提示模板:</p>
+                    <p className="text-sm font-medium mb-2">{t('promptTemplate')}:</p>
                     <div className="bg-muted p-3 rounded-lg max-h-40 overflow-y-auto relative group custom-scrollbar">
                       <pre className="whitespace-pre-wrap text-xs">
                         {prompt.template}

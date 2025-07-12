@@ -10,11 +10,13 @@ import { Badge } from "@/components/ui/badge";
 import { loadApiConfig, getSavedPromptById, extractVariablesFromTemplate, type SavedPrompt } from "@/lib/storage";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 function TestPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const promptId = searchParams.get("id");
+  const t = useTranslations('TestPage');
 
   const [selectedPrompt, setSelectedPrompt] = useState<SavedPrompt | null>(null);
   const [promptVariables, setPromptVariables] = useState<string[]>([]);
@@ -53,13 +55,13 @@ function TestPageContent() {
     api: "/api/test",
     onError: (error) => {
       console.error('Test error:', error);
-      toast.error('测试时发生错误: ' + error.message);
+      toast.error(t('testError') + ': ' + error.message);
     }
   });
 
   const handleTest = async () => {
     if (!selectedPrompt || !apiConfig.apiKey) {
-      toast.error("请确保已选择提示模板并配置API密钥");
+      toast.error(t('ensureConfigured'));
       return;
     }
 
@@ -69,7 +71,7 @@ function TestPageContent() {
     );
 
     if (emptyVariables.length > 0) {
-      toast.error(`请填写所有变量: ${emptyVariables.join(", ")}`);
+      toast.error(`${t('fillAllVariables')}: ${emptyVariables.join(", ")}`);
       return;
     }
 
@@ -101,7 +103,7 @@ function TestPageContent() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || '测试失败');
+        throw new Error(errorData.error || t('testError'));
       }
 
       // 处理流式响应
@@ -109,7 +111,7 @@ function TestPageContent() {
       const decoder = new TextDecoder();
       
       if (!reader) {
-        throw new Error('无法读取响应流');
+        throw new Error(t('testError'));
       }
 
       let fullText = "";
@@ -147,7 +149,7 @@ function TestPageContent() {
 
     } catch (error) {
       console.error('Error testing prompt:', error);
-      toast.error('测试时发生错误: ' + (error instanceof Error ? error.message : '未知错误'));
+      toast.error(t('testError') + ': ' + (error instanceof Error ? error.message : t('testError')));
     }
   };
 
@@ -157,18 +159,18 @@ function TestPageContent() {
         <div className="flex items-center gap-4 mb-8">
           <Button variant="outline" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            返回
+            {t('back')}
           </Button>
-          <h1 className="text-3xl font-bold">测试提示模板</h1>
+          <h1 className="text-3xl font-bold">{t('title')}</h1>
         </div>
         
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <p className="text-muted-foreground mb-4">
-              {promptId ? "找不到指定的提示模板" : "请从历史记录页面选择要测试的提示模板"}
+              {promptId ? t('notFound') : t('selectFromHistory')}
             </p>
             <Button onClick={() => router.push("/history")}>
-              前往历史记录
+              {t('goToHistory')}
             </Button>
           </CardContent>
         </Card>
@@ -181,12 +183,12 @@ function TestPageContent() {
       <div className="flex items-center gap-4 mb-8">
         <Button variant="outline" onClick={() => router.back()}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          返回
+          {t('back')}
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">测试提示模板</h1>
+          <h1 className="text-3xl font-bold">{t('title')}</h1>
           <p className="text-muted-foreground">
-            为变量输入值并测试提示模板的效果
+            {t('description')}
           </p>
         </div>
       </div>
@@ -195,17 +197,17 @@ function TestPageContent() {
         {/* 提示模板信息 */}
         <Card>
           <CardHeader>
-            <CardTitle>提示模板信息</CardTitle>
+            <CardTitle>{t('templateInfo')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="text-sm font-medium mb-2">原始任务:</p>
+              <p className="text-sm font-medium mb-2">{t('originalTask')}:</p>
               <p className="text-sm text-muted-foreground">{selectedPrompt.task}</p>
             </div>
             
             {promptVariables.length > 0 && (
               <div>
-                <p className="text-sm font-medium mb-2">变量:</p>
+                <p className="text-sm font-medium mb-2">{t('variables')}:</p>
                 <div className="flex flex-wrap gap-1">
                   {promptVariables.map((variable, index) => (
                     <Badge key={index} variant="secondary">
@@ -217,16 +219,16 @@ function TestPageContent() {
             )}
 
             <div>
-              <p className="text-sm font-medium mb-2">提示模板:</p>
+              <p className="text-sm font-medium mb-2">{t('promptTemplate')}:</p>
               <div className="bg-muted p-3 rounded-lg max-h-40 overflow-y-auto custom-scrollbar">
                 <pre className="whitespace-pre-wrap text-xs">
                   {selectedPrompt.template}
                 </pre>
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                检测到的变量数量: {promptVariables.length}
+                {t('detectedVariableCount')}: {promptVariables.length}
                 {promptVariables.length > 0 && (
-                  ` - 变量: ${promptVariables.join(', ')}`
+                  ` - ${t('variables')}: ${promptVariables.join(', ')}`
                 )}
               </p>
             </div>
@@ -237,9 +239,9 @@ function TestPageContent() {
         {promptVariables.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>输入变量值</CardTitle>
+              <CardTitle>{t('inputVariables')}</CardTitle>
               <CardDescription>
-                为每个变量输入具体的值来测试提示模板
+                {t('inputVariablesDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -249,7 +251,7 @@ function TestPageContent() {
                     {variable} *
                   </label>
                   <Textarea
-                    placeholder={`输入 ${variable} 的值...`}
+                    placeholder={`${t('enterValue')} ${variable}...`}
                     value={variableValues[variable] || ""}
                     onChange={(e) => {
                       setVariableValues((prev) => ({
@@ -266,11 +268,11 @@ function TestPageContent() {
                 disabled={isLoading || !apiConfig.apiKey}
                 className="w-full"
               >
-                {isLoading ? "测试中..." : "开始测试"}
+                {isLoading ? t('testing') : t('startTest')}
               </Button>
               {!apiConfig.apiKey && (
                 <p className="text-sm text-destructive">
-                  请先在主页面配置API密钥
+                  {t('configureApiKey')}
                 </p>
               )}
             </CardContent>
@@ -281,15 +283,15 @@ function TestPageContent() {
         {(messages.length > 0 || isLoading) && (
           <Card>
             <CardHeader>
-              <CardTitle>测试结果</CardTitle>
+              <CardTitle>{t('testResults')}</CardTitle>
               <CardDescription>
-                AI根据您的提示模板和变量值生成的内容
+                {t('testResultsDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="bg-muted p-4 rounded-lg min-h-[200px] max-h-[400px] overflow-y-auto custom-scrollbar">
                 <pre className="whitespace-pre-wrap text-sm">
-                  {isLoading ? "正在生成中..." : 
+                  {isLoading ? t('generating') : 
                    messages.find(m => m.role === 'assistant')?.content || ""}
                 </pre>
               </div>
@@ -306,7 +308,7 @@ export default function TestPage() {
     <Suspense fallback={
       <div className="container mx-auto p-4 max-w-4xl">
         <div className="flex items-center justify-center py-12">
-          <p>加载中...</p>
+          <p>Loading...</p>
         </div>
       </div>
     }>

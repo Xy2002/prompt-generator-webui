@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { saveApiConfig, loadApiConfig, savePrompt } from "@/lib/storage";
 import { toast } from "sonner";
+import { useTranslations } from 'next-intl';
 
 interface GeneratedPrompt {
   template: string;
@@ -54,13 +55,14 @@ function extractPrompt(metapromptResponse: string): string {
   if (instructionSections.length === 0) {
     return metapromptResponse.trim();
   }
-  
+
   const instructions = instructionSections[0];
   const processed = stripLastSentence(removeEmptyTags(instructions.trim()));
   return processed;
 }
 
 export default function Home() {
+  const t = useTranslations('HomePage');
   const [task, setTask] = useState("");
   const [variables, setVariables] = useState("");
   const [baseURL, setBaseURL] = useState("https://api.openai.com/v1");
@@ -86,7 +88,7 @@ export default function Home() {
         apiKey: apiKey.trim(),
         modelName: modelName.trim(),
       });
-      toast.success("API配置已保存");
+      toast.success(t('configSaved'));
     }
   };
 
@@ -114,10 +116,10 @@ export default function Home() {
           .map(v => `{$${v}}`)
           .join('\n');
       }
-      
+
       const assistantPartial = "<Inputs>" + (variableString ? `\n${variableString}\n</Inputs>\n<Instructions Structure>` : "");
       const fullText = assistantPartial + message.content;
-      
+
       // 提取提示模板
       const extractedPrompt = extractPrompt(fullText);
       const detectedVariables = extractVariables(extractedPrompt);
@@ -131,50 +133,50 @@ export default function Home() {
 
       // 保存到本地存储 - 只保存任务和模板，变量从模板中动态提取
       savePrompt(task.trim(), extractedPrompt);
-      
-      toast.success("提示模板已生成并保存！");
+
+      toast.success(t('templateGenerated'));
     }
   });
 
   const handleGenerate = async () => {
     if (!task.trim() || !apiKey.trim()) {
-      toast.error("请填写任务描述和API密钥");
+      toast.error(t('fillTaskAndApiKey'));
       return;
     }
 
     setGeneratedPrompt(null);
-    
+
     // 重置聊天状态
     generateChat.setMessages([]);
-    
+
     await generateChat.append({
       role: "user",
-      content: "生成提示模板",
+      content: t('generatePromptText'),
     });
   };
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold mb-2">元提示生成器</h1>
+        <h1 className="text-3xl font-bold mb-2">{t('title')}</h1>
         <p className="text-muted-foreground">
-          输入您的任务描述，生成专业的提示模板
+          {t('description')}
         </p>
       </div>
 
       <div className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>0. API 配置</CardTitle>
+            <CardTitle>0. {t('apiConfig')}</CardTitle>
             <CardDescription>
-              配置您的AI服务提供商信息
+              {t('apiConfigDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  Base URL
+                  {t('baseUrl')}
                 </label>
                 <Input
                   placeholder="https://api.openai.com/v1"
@@ -182,13 +184,13 @@ export default function Home() {
                   onChange={(e) => setBaseURL(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  OpenAI: https://api.openai.com/v1<br/>
-                  OpenRouter: https://openrouter.ai/api/v1
+                  {t('openaiExample')}<br />
+                  {t('openrouterExample')}
                 </p>
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  模型名称
+                  {t('modelName')}
                 </label>
                 <Input
                   placeholder="gpt-4"
@@ -196,64 +198,64 @@ export default function Home() {
                   onChange={(e) => setModelName(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  例如: gpt-4, gpt-3.5-turbo, claude-3-sonnet
+                  {t('modelExample')}
                 </p>
               </div>
             </div>
             <div>
               <label className="text-sm font-medium mb-2 block">
-                API 密钥 *
+                {t('apiKeyRequired')}
               </label>
               <Input
                 type="password"
-                placeholder="输入您的API密钥"
+                placeholder={t('apiKeyPlaceholder')}
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                您的API密钥将仅用于此次会话，不会被存储
+                {t('apiKeyNote')}
               </p>
             </div>
-            <Button 
+            <Button
               onClick={handleSaveConfig}
               variant="outline"
               className="w-full"
             >
-              保存配置
+              {t('saveConfig')}
             </Button>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>1. 输入任务</CardTitle>
+            <CardTitle>1. {t('inputTask')}</CardTitle>
             <CardDescription>
-              描述您希望AI完成的任务，例如：根据用户偏好为我从菜单中选择一个项目
+              {t('inputTaskDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Textarea
-              placeholder="请详细描述您的任务..."
+              placeholder={t('taskPlaceholder')}
               value={task}
               onChange={(e) => setTask(e.target.value)}
               rows={6}
             />
             <div>
               <label className="text-sm font-medium mb-2 block">
-                可选变量 (用逗号分隔，例如：MENU, PREFERENCES)
+                {t('optionalVariables')}
               </label>
               <Input
-                placeholder="例如：MENU, PREFERENCES, CONSTRAINTS"
+                placeholder={t('variablesPlaceholder')}
                 value={variables}
                 onChange={(e) => setVariables(e.target.value)}
               />
             </div>
-            <Button 
-              onClick={handleGenerate} 
+            <Button
+              onClick={handleGenerate}
               disabled={!task.trim() || !apiKey.trim() || generateChat.isLoading}
               className="w-full"
             >
-              {generateChat.isLoading ? "生成中..." : "生成提示模板"}
+              {generateChat.isLoading ? t('generating') : t('generateTemplate')}
             </Button>
           </CardContent>
         </Card>
@@ -262,16 +264,16 @@ export default function Home() {
           <>
             <Card>
               <CardHeader>
-                <CardTitle>2. 生成的提示模板</CardTitle>
+                <CardTitle>2. {t('generatedTemplate')}</CardTitle>
                 <CardDescription>
-                  {generateChat.isLoading ? "正在生成中..." : `检测到的变量: ${generatedPrompt?.variables.join(", ") || "无"}`}
+                  {generateChat.isLoading ? t('generatingInProgress') : `${t('detectedVariables')}: ${generatedPrompt?.variables.join(", ") || t('noVariables')}`}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="bg-muted p-4 rounded-lg max-h-[400px] overflow-y-auto custom-scrollbar">
                   <pre className="whitespace-pre-wrap text-sm">
-                    {generateChat.isLoading 
-                      ? generateChat.messages.find(m => m.role === 'assistant')?.content || "开始生成..."
+                    {generateChat.isLoading
+                      ? generateChat.messages.find(m => m.role === 'assistant')?.content || t('startGenerating')
                       : generatedPrompt?.template
                     }
                   </pre>
@@ -279,7 +281,7 @@ export default function Home() {
                 {generatedPrompt && generatedPrompt.variables.length > 0 && (
                   <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg">
                     <p className="text-sm text-blue-800 dark:text-blue-200">
-                      ✅ 提示模板已保存！您可以在 <strong>历史记录</strong> 页面查看所有保存的模板，并在 <strong>测试页面</strong> 进行测试。
+                      {t('templateSaved')}
                     </p>
                   </div>
                 )}
