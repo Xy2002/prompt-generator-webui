@@ -1,7 +1,7 @@
 "use client";
 
 import { Link, usePathname } from "@/i18n/navigation";
-import { Github, Menu, X } from "lucide-react";
+import { Menu, X, Github } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -17,6 +17,7 @@ export function Navigation() {
     { href: "/", label: t('home') },
     { href: "/history", label: t('history') },
     { href: "/test", label: t('test') },
+    { href: "/settings", label: t('settings') },
   ];
 
   const toggleMenu = () => {
