@@ -1,20 +1,22 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { Github, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export function Navigation() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const t = useTranslations('Navigation');
 
   const links = [
-    { href: "/", label: "生成提示" },
-    { href: "/history", label: "历史记录" },
-    { href: "/test", label: "测试页面" },
+    { href: "/", label: t('home') },
+    { href: "/history", label: t('history') },
+    { href: "/test", label: t('test') },
   ];
 
   const toggleMenu = () => {
@@ -32,7 +34,7 @@ export function Navigation() {
           <div className="flex items-center">
             <Link className="mr-6 flex items-center space-x-2" href="/" onClick={closeMenu}>
               <span className="font-bold">
-                元提示生成器
+                {t('appName')}
               </span>
             </Link>
             {/* Desktop navigation */}
@@ -51,8 +53,11 @@ export function Navigation() {
               ))}
             </nav>
           </div>
-          
+
           <div className="flex items-center gap-2">
+            {/* Language switcher */}
+            <LanguageSwitcher />
+
             {/* GitHub button */}
             <Link
               href="https://github.com/Xy2002/prompt-generator-webui"
@@ -61,10 +66,10 @@ export function Navigation() {
             >
               <Button variant="ghost" size="sm" className="h-8 w-8 px-0">
                 <Github className="h-4 w-4" />
-                <span className="sr-only">GitHub</span>
+                <span className="sr-only">{t('github')}</span>
               </Button>
             </Link>
-            
+
             {/* Mobile menu button */}
             <Button
               variant="ghost"
@@ -77,11 +82,11 @@ export function Navigation() {
               ) : (
                 <Menu className="h-4 w-4" />
               )}
-              <span className="sr-only">菜单</span>
+              <span className="sr-only">{t('menu')}</span>
             </Button>
           </div>
         </div>
-        
+
         {/* Mobile navigation menu */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-border/40 bg-background/95 backdrop-blur">
@@ -93,8 +98,8 @@ export function Navigation() {
                   onClick={closeMenu}
                   className={cn(
                     "block px-3 py-2 rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
-                    pathname === link.href 
-                      ? "bg-accent text-accent-foreground" 
+                    pathname === link.href
+                      ? "bg-accent text-accent-foreground"
                       : "text-foreground/70"
                   )}
                 >
