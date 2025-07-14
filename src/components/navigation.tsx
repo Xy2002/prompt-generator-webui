@@ -16,7 +16,7 @@ export function Navigation() {
   const links = [
     { href: "/", label: t('home') },
     { href: "/history", label: t('history') },
-    { href: "/test", label: t('test') },
+    { href: "/results", label: t('results') },
     { href: "/settings", label: t('settings') },
   ];
 

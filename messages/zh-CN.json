@@ -73,12 +73,13 @@
         "ensureConfigured": "请确保已选择提示模板并配置API密钥",
         "fillAllVariables": "请填写所有变量",
         "configureApiKey": "请先在主页面配置API密钥",
-        "testError": "测试时发生错误"
+        "testError": "测试时发生错误",
+        "testResultSaved": "测试结果保存成功"
     },
     "Navigation": {
         "home": "生成提示",
         "history": "历史记录",
-        "test": "测试页面",
+        "results": "测试结果",
         "settings": "设置",
         "menu": "菜单",
         "github": "GitHub",
@@ -140,5 +141,23 @@
         "apiConfigurationImported": "API配置已导入",
         "promptsImported": "个提示已导入",
         "testResultsImported": "个测试结果已导入"
+    },
+    "TestResults": {
+        "title": "测试结果",
+        "description": "查看并管理您的所有测试结果",
+        "noResults": "暂无测试结果",
+        "noFilteredResults": "没有符合搜索条件的结果",
+        "testPromptsToSeeResults": "测试您的提示以查看结果",
+        "searchPlaceholder": "搜索测试结果...",
+        "totalResults": "总计",
+        "filtered": "已筛选",
+        "variables": "个变量",
+        "variableValues": "变量值",
+        "emptyValue": "空值",
+        "promptTemplate": "提示模板",
+        "testResult": "测试结果",
+        "confirmDelete": "确定要删除这个测试结果吗？",
+        "deleteSuccess": "测试结果删除成功",
+        "copiedToClipboard": "已复制到剪贴板"
     }
 }

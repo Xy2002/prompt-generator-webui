@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { loadApiConfig, getSavedPromptById, extractVariablesFromTemplate, type SavedPrompt } from "@/lib/storage";
+import { loadApiConfig, getSavedPromptById, extractVariablesFromTemplate, saveTestResult, type SavedPrompt } from "@/lib/storage";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -145,6 +145,19 @@ function TestPageContent() {
         }
       } finally {
         reader.releaseLock();
+      }
+
+      // 保存测试结果
+      if (fullText && selectedPrompt) {
+        saveTestResult(
+          selectedPrompt.id,
+          selectedPrompt.task,
+          selectedPrompt.template,
+          promptVariables,
+          variableValues,
+          fullText
+        );
+        toast.success(t('testResultSaved'));
       }
 
     } catch (error) {

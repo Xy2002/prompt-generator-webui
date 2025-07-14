@@ -73,12 +73,13 @@
         "ensureConfigured": "Please ensure a prompt template is selected and API key is configured",
         "fillAllVariables": "Please fill in all variables",
         "configureApiKey": "Please configure API key on the main page first",
-        "testError": "Error occurred during testing"
+        "testError": "Error occurred during testing",
+        "testResultSaved": "Test result saved successfully"
     },
     "Navigation": {
         "home": "Generate Prompt",
         "history": "History",
-        "test": "Test Page",
+        "results": "Test Results",
         "settings": "Settings",
         "menu": "Menu",
         "github": "GitHub",
@@ -140,5 +141,23 @@
         "apiConfigurationImported": "API configuration imported",
         "promptsImported": "prompts imported",
         "testResultsImported": "test results imported"
+    },
+    "TestResults": {
+        "title": "Test Results",
+        "description": "View all your test results and manage them",
+        "noResults": "No test results yet",
+        "noFilteredResults": "No results match your search",
+        "testPromptsToSeeResults": "Test your prompts to see results here",
+        "searchPlaceholder": "Search test results...",
+        "totalResults": "Total",
+        "filtered": "Filtered",
+        "variables": "variables",
+        "variableValues": "Variable Values",
+        "emptyValue": "Empty",
+        "promptTemplate": "Prompt Template",
+        "testResult": "Test Result",
+        "confirmDelete": "Are you sure you want to delete this test result?",
+        "deleteSuccess": "Test result deleted successfully",
+        "copiedToClipboard": "Copied to clipboard"
     }
 }
