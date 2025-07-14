@@ -125,10 +125,20 @@ export default function TestResultsPage() {
             <Card key={result.id} className="relative">
               <CardHeader>
                 <div className="flex justify-between items-start">
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <CardTitle className="flex items-center gap-2 mb-2">
-                      <FileText className="h-5 w-5" />
-                      {result.task}
+                      <FileText className="h-5 w-5 flex-shrink-0" />
+                      <div 
+                        className={`${
+                          expandedResults.has(result.id) 
+                            ? 'whitespace-pre-wrap' 
+                            : 'truncate'
+                        } cursor-pointer hover:text-primary transition-colors`}
+                        onClick={() => toggleExpanded(result.id)}
+                        title={result.task}
+                      >
+                        {result.task}
+                      </div>
                     </CardTitle>
                     <CardDescription className="flex items-center gap-4 text-xs">
                       <span className="flex items-center gap-1">
@@ -141,7 +151,7 @@ export default function TestResultsPage() {
                       </span>
                     </CardDescription>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 ml-2 flex-shrink-0">
                     <Button
                       variant="ghost"
                       size="sm"
