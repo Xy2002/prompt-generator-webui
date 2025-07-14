@@ -49,8 +49,22 @@ function TestPageContent() {
   }, [promptId]);
 
   // 用于测试提示模板的聊天
-  const { messages, isLoading, setMessages } = useChat({
+  const { messages, status, setMessages, append } = useChat({
     api: "/api/test",
+    onFinish: (message) => {
+      // 保存测试结果
+      if (message.content && selectedPrompt) {
+        saveTestResult(
+          selectedPrompt.id,
+          selectedPrompt.task,
+          selectedPrompt.template,
+          promptVariables,
+          variableValues,
+          message.content
+        );
+        toast.success(t('testResultSaved'));
+      }
+    },
     onError: (error) => {
       console.error('Test error:', error);
       // 尝试从错误中提取具体的错误信息
@@ -65,6 +79,20 @@ function TestPageContent() {
       toast.error(errorMessage);
     }
   });
+
+  // 防止用户在测试过程中离开页面
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (status === 'submitted' || status === 'streaming') {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [status]);
+
 
   const handleTest = async () => {
     if (!selectedPrompt || !apiConfig.apiKey) {
@@ -92,95 +120,23 @@ function TestPageContent() {
       promptWithVariables = promptWithVariables.replace(pattern, value);
     }
 
-    // 手动调用API进行测试
+    // 使用 useChat 的 append 方法
     try {
-      const response = await fetch('/api/test', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      await append({
+        role: "user",
+        content: promptWithVariables,
+      }, {
+        body: {
           baseURL: apiConfig.baseURL,
           apiKey: apiConfig.apiKey,
           modelName: apiConfig.modelName,
           template: selectedPrompt.template,
           variableValues,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || t('testError'));
-      }
-
-      // 处理流式响应
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-
-      if (!reader) {
-        throw new Error(t('testError'));
-      }
-
-      let fullText = "";
-
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-
-          if (done) {
-            break;
-          }
-
-          const chunk = decoder.decode(value, { stream: true });
-          const lines = chunk.split('\n');
-
-          for (const line of lines) {
-            if (line.startsWith('0:"')) {
-              try {
-                const content = JSON.parse(line.substring(2));
-                fullText += content;
-                // 更新消息以显示流式内容
-                setMessages([
-                  { id: '1', role: 'user', content: promptWithVariables },
-                  { id: '2', role: 'assistant', content: fullText }
-                ]);
-              } catch {
-                // 忽略解析错误
-              }
-            }
-          }
         }
-      } finally {
-        reader.releaseLock();
-      }
-
-      // 保存测试结果
-      if (fullText && selectedPrompt) {
-        saveTestResult(
-          selectedPrompt.id,
-          selectedPrompt.task,
-          selectedPrompt.template,
-          promptVariables,
-          variableValues,
-          fullText
-        );
-        toast.success(t('testResultSaved'));
-      }
-
+      });
     } catch (error) {
-      console.error('Error testing prompt:', error);
-      // 尝试从错误中提取具体的错误信息
-      let errorMessage = t('testError');
-
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      } else if (error && typeof error === 'object' && 'error' in error) {
-        errorMessage = (error as { error: string }).error;
-      }
-
-      toast.error(errorMessage);
+      console.error('Error in handleTest:', error);
+      // 错误会通过 onError 回调处理
     }
   };
 
@@ -296,10 +252,13 @@ function TestPageContent() {
               ))}
               <Button
                 onClick={handleTest}
-                disabled={isLoading || !apiConfig.apiKey}
+                disabled={status === 'submitted' || status === 'streaming' || !apiConfig.apiKey}
                 className="w-full"
               >
-                {isLoading ? t('testing') : t('startTest')}
+                {(status === 'submitted' || status === 'streaming') && (
+                  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2"></div>
+                )}
+                {status === 'submitted' || status === 'streaming' ? t('testing') : t('startTest')}
               </Button>
               {!apiConfig.apiKey && (
                 <p className="text-sm text-destructive">
@@ -311,19 +270,26 @@ function TestPageContent() {
         )}
 
         {/* 测试结果 */}
-        {(messages.length > 0 || isLoading) && (
-          <Card>
+        {(messages.length > 0 || status === 'submitted' || status === 'streaming') && (
+          <Card className={(status === 'submitted' || status === 'streaming') ? "border-blue-200 dark:border-blue-800" : ""}>
             <CardHeader>
-              <CardTitle>{t('testResults')}</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                {(status === 'submitted' || status === 'streaming') && (
+                  <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                )}
+                {t('testResults')}
+              </CardTitle>
               <CardDescription>
                 {t('testResultsDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="bg-muted p-4 rounded-lg min-h-[200px] max-h-[400px] overflow-y-auto custom-scrollbar">
+              <div className={`bg-muted p-4 rounded-lg min-h-[200px] max-h-[400px] overflow-y-auto custom-scrollbar ${status === 'submitted' ? 'animate-pulse' : ''}`}>
                 <pre className="whitespace-pre-wrap text-sm">
-                  {isLoading ? t('generating') :
-                    messages.find(m => m.role === 'assistant')?.content || ""}
+                  {status === 'submitted' 
+                    ? t('generating')
+                    : messages.find(m => m.role === 'assistant')?.content || (status === 'streaming' ? t('generating') : "")
+                  }
                 </pre>
               </div>
             </CardContent>

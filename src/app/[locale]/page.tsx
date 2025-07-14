@@ -70,6 +70,7 @@ export default function Home() {
   const [modelName, setModelName] = useState("gpt-4");
   const [generatedPrompt, setGeneratedPrompt] = useState<GeneratedPrompt | null>(null);
 
+
   // 加载保存的API配置
   useEffect(() => {
     const savedConfig = loadApiConfig();
@@ -149,6 +150,19 @@ export default function Home() {
       toast.error(errorMessage);
     }
   });
+
+  // 防止用户在生成过程中离开页面
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (generateChat.status === 'submitted' || generateChat.status === 'streaming') {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [generateChat.status]);
 
   const handleGenerate = async () => {
     if (!task.trim() || !apiKey.trim()) {
@@ -264,27 +278,35 @@ export default function Home() {
             </div>
             <Button
               onClick={handleGenerate}
-              disabled={!task.trim() || !apiKey.trim() || generateChat.isLoading}
+              disabled={!task.trim() || !apiKey.trim() || generateChat.status === 'submitted' || generateChat.status === 'streaming'}
               className="w-full"
             >
-              {generateChat.isLoading ? t('generating') : t('generateTemplate')}
+              {(generateChat.status === 'submitted' || generateChat.status === 'streaming') && (
+                <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2"></div>
+              )}
+              {generateChat.status === 'submitted' || generateChat.status === 'streaming' ? t('generating') : t('generateTemplate')}
             </Button>
           </CardContent>
         </Card>
 
-        {(generateChat.isLoading || generatedPrompt || generateChat.messages.length > 0) && (
+        {(generateChat.status === 'submitted' || generateChat.status === 'streaming' || generatedPrompt || generateChat.messages.length > 0) && (
           <>
-            <Card>
+            <Card className={(generateChat.status === 'submitted' || generateChat.status === 'streaming') ? "border-blue-200 dark:border-blue-800" : ""}>
               <CardHeader>
-                <CardTitle>2. {t('generatedTemplate')}</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  {(generateChat.status === 'submitted' || generateChat.status === 'streaming') && (
+                    <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                  )}
+                  2. {t('generatedTemplate')}
+                </CardTitle>
                 <CardDescription>
-                  {generateChat.isLoading ? t('generatingInProgress') : `${t('detectedVariables')}: ${generatedPrompt?.variables.join(", ") || t('noVariables')}`}
+                  {(generateChat.status === 'submitted' || generateChat.status === 'streaming') ? t('generatingInProgress') : `${t('detectedVariables')}: ${generatedPrompt?.variables.join(", ") || t('noVariables')}`}
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="bg-muted p-4 rounded-lg max-h-[400px] overflow-y-auto custom-scrollbar">
+                <div className={`bg-muted p-4 rounded-lg max-h-[400px] overflow-y-auto custom-scrollbar ${(generateChat.status === 'submitted' || generateChat.status === 'streaming') ? 'animate-pulse' : ''}`}>
                   <pre className="whitespace-pre-wrap text-sm">
-                    {generateChat.isLoading
+                    {(generateChat.status === 'submitted' || generateChat.status === 'streaming')
                       ? generateChat.messages.find(m => m.role === 'assistant')?.content || t('startGenerating')
                       : generatedPrompt?.template
                     }
