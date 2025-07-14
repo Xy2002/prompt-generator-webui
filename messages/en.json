@@ -27,6 +27,7 @@
         "templateSaved": "✅ Prompt template saved! You can view all saved templates on the **History** page and test them on the **Test** page.",
         "fillTaskAndApiKey": "Please fill in task description and API key",
         "templateGenerated": "Prompt template generated and saved!",
+        "generationError": "An error occurred during generation",
         "generatePromptText": "Generate prompt template",
         "openaiExample": "OpenAI: https://api.openai.com/v1",
         "openrouterExample": "OpenRouter: https://openrouter.ai/api/v1",

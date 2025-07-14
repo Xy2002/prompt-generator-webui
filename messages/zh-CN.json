@@ -27,6 +27,7 @@
         "templateSaved": "✅ 提示模板已保存！您可以在 **历史记录** 页面查看所有保存的模板，并在 **测试页面** 进行测试。",
         "fillTaskAndApiKey": "请填写任务描述和API密钥",
         "templateGenerated": "提示模板已生成并保存！",
+        "generationError": "生成时发生错误",
         "generatePromptText": "生成提示模板",
         "openaiExample": "OpenAI: https://api.openai.com/v1",
         "openrouterExample": "OpenRouter: https://openrouter.ai/api/v1",

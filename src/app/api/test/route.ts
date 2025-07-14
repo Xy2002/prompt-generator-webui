@@ -42,7 +42,11 @@ export async function POST(request: NextRequest) {
       temperature: 0
     });
 
-    return result.toDataStreamResponse();
+    return result.toDataStreamResponse({
+      getErrorMessage: (error) => {
+        return (error as {message: string}).message;
+      }
+    });
 
   } catch (error) {
     console.error('Error testing prompt:', error);
