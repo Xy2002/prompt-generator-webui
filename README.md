@@ -15,6 +15,10 @@
 - 🧪 **实时测试**: 内置测试页面，支持变量输入和实时 AI 响应
 - 📚 **历史管理**: 查看、管理和删除历史生成的提示模板
 - 🔧 **多 AI 供应商**: 支持 OpenAI、OpenRouter 等多种 AI 服务
+- 🌍 **多语言支持**: 完整的国际化支持，支持中文和英文
+- 📤 **数据导出**: 支持导出所有用户数据为 JSON 备份文件
+- 📥 **数据导入**: 支持导入备份数据，可选择性恢复不同类型的数据
+- ⚙️ **设置页面**: 集中管理应用配置和数据管理功能
 - 🎨 **现代化 UI**: 基于 shadcn/ui 的精美用户界面
 - 🌙 **深色模式**: 完整的深色/浅色主题支持
 
@@ -24,6 +28,11 @@
 - **UI 库**: React 19 + TypeScript 5
 - **样式**: Tailwind CSS 4 + shadcn/ui
 - **AI 集成**: AI SDK (@ai-sdk/openai, @ai-sdk/react)
+- **国际化**: next-intl 4.3.4
+- **组件库**: Radix UI (Alert Dialog, Checkbox, Dialog, Separator, Slot)
+- **主题**: next-themes 0.4.6
+- **通知**: sonner 2.0.6
+- **数据验证**: zod 3.25.76
 - **图标**: Lucide React
 - **构建工具**: Turbopack (开发环境)
 - **包管理**: pnpm
@@ -60,6 +69,31 @@ npm run dev
 
 访问 [http://localhost:3000](http://localhost:3000) 查看应用。
 
+## 🌐 多语言支持
+
+该应用支持多语言界面，当前支持：
+
+- **中文 (zh-CN)**: 默认语言
+- **英文 (en)**: 英文界面
+
+### 语言切换
+
+- 在导航栏右侧点击语言切换按钮
+- 支持实时语言切换，无需刷新页面
+- 语言偏好会自动保存到本地存储
+
+### 本地化路由
+
+应用使用 `[locale]` 动态路由结构：
+- 中文: `/zh-CN/` (默认)
+- 英文: `/en/`
+
+### 添加新语言
+
+1. 在 `src/i18n/routing.ts` 中添加新的 locale
+2. 在 `messages/` 目录下添加对应的翻译文件
+3. 在 `src/components/language-switcher.tsx` 中添加语言选项
+
 ## 🚀 使用指南
 
 ### 1. 配置 API
@@ -92,24 +126,57 @@ npm run dev
 - 查看模板详情、变量信息和创建时间
 - 删除不需要的模板
 
+### 5. 数据管理
+
+**数据导出**：
+- 访问设置页面 (Settings)
+- 查看数据摘要（API 配置、保存的提示、测试结果）
+- 一键导出所有数据为 JSON 备份文件
+
+**数据导入**：
+- 在设置页面选择导入数据
+- 上传之前导出的 JSON 备份文件
+- 预览导入数据并选择导入选项
+- 选择合并或替换现有数据
+
+### 6. 语言切换
+
+- 点击导航栏中的语言切换按钮
+- 支持中文和英文界面切换
+- 语言偏好会自动保存
+
 ## 📂 项目结构
 
 ```
 src/
 ├── app/                    # Next.js App Router 页面
-│   ├── api/               # API 路由
-│   │   ├── generate/      # 提示生成 API
-│   │   └── test/          # 提示测试 API
-│   ├── history/           # 历史记录页面
-│   ├── test/              # 测试页面
-│   ├── layout.tsx         # 根布局
-│   ├── page.tsx           # 首页
-│   └── globals.css        # 全局样式
-├── components/ui/         # shadcn/ui 组件
+│   ├── [locale]/          # 国际化路由
+│   │   ├── history/       # 历史记录页面
+│   │   ├── settings/      # 设置页面
+│   │   ├── test/          # 测试页面
+│   │   ├── layout.tsx     # 本地化布局
+│   │   ├── page.tsx       # 首页
+│   │   └── globals.css    # 全局样式
+│   └── api/               # API 路由
+│       ├── generate/      # 提示生成 API
+│       └── test/          # 提示测试 API
+├── components/
+│   ├── ui/                # shadcn/ui 组件
+│   ├── data-export.tsx    # 数据导出组件
+│   ├── data-import.tsx    # 数据导入组件
+│   ├── language-switcher.tsx # 语言切换组件
+│   └── navigation.tsx     # 导航组件
+├── i18n/                  # 国际化配置
+│   ├── navigation.ts      # 导航配置
+│   ├── request.ts         # 请求配置
+│   └── routing.ts         # 路由配置
 ├── lib/
 │   ├── storage.ts         # 本地存储工具
 │   └── utils.ts           # 工具函数
-└── ...
+├── messages/              # 翻译文件
+│   ├── en.json            # 英文翻译
+│   └── zh-CN.json         # 中文翻译
+└── middleware.ts          # Next.js 中间件
 ```
 
 ## 🔧 开发命令
