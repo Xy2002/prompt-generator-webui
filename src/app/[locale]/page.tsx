@@ -135,6 +135,18 @@ export default function Home() {
       savePrompt(task.trim(), extractedPrompt);
 
       toast.success(t('templateGenerated'));
+    },
+    onError: (error) => {
+      // 尝试从错误中提取具体的错误信息
+      let errorMessage = t('generationError');
+
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+
+      toast.error(errorMessage);
     }
   });
 

@@ -35,11 +35,9 @@ function TestPageContent() {
       const prompt = getSavedPromptById(promptId);
       if (prompt) {
         setSelectedPrompt(prompt);
-        
         // 从模板中提取变量
         const variables = extractVariablesFromTemplate(prompt.template);
         setPromptVariables(variables);
-        
         // 初始化变量值
         const initialValues: Record<string, string> = {};
         variables.forEach(variable => {
@@ -55,7 +53,16 @@ function TestPageContent() {
     api: "/api/test",
     onError: (error) => {
       console.error('Test error:', error);
-      toast.error(t('testError') + ': ' + error.message);
+      // 尝试从错误中提取具体的错误信息
+      let errorMessage = t('testError');
+
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+
+      toast.error(errorMessage);
     }
   });
 
@@ -109,24 +116,24 @@ function TestPageContent() {
       // 处理流式响应
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
-      
+
       if (!reader) {
         throw new Error(t('testError'));
       }
 
       let fullText = "";
-      
+
       try {
         while (true) {
           const { done, value } = await reader.read();
-          
+
           if (done) {
             break;
           }
-          
+
           const chunk = decoder.decode(value, { stream: true });
           const lines = chunk.split('\n');
-          
+
           for (const line of lines) {
             if (line.startsWith('0:"')) {
               try {
@@ -162,7 +169,18 @@ function TestPageContent() {
 
     } catch (error) {
       console.error('Error testing prompt:', error);
-      toast.error(t('testError') + ': ' + (error instanceof Error ? error.message : t('testError')));
+      // 尝试从错误中提取具体的错误信息
+      let errorMessage = t('testError');
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error && typeof error === 'object' && 'error' in error) {
+        errorMessage = (error as { error: string }).error;
+      }
+
+      toast.error(errorMessage);
     }
   };
 
@@ -176,7 +194,7 @@ function TestPageContent() {
           </Button>
           <h1 className="text-3xl font-bold">{t('title')}</h1>
         </div>
-        
+
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <p className="text-muted-foreground mb-4">
@@ -217,7 +235,7 @@ function TestPageContent() {
               <p className="text-sm font-medium mb-2">{t('originalTask')}:</p>
               <p className="text-sm text-muted-foreground">{selectedPrompt.task}</p>
             </div>
-            
+
             {promptVariables.length > 0 && (
               <div>
                 <p className="text-sm font-medium mb-2">{t('variables')}:</p>
@@ -276,8 +294,8 @@ function TestPageContent() {
                   />
                 </div>
               ))}
-              <Button 
-                onClick={handleTest} 
+              <Button
+                onClick={handleTest}
                 disabled={isLoading || !apiConfig.apiKey}
                 className="w-full"
               >
@@ -304,8 +322,8 @@ function TestPageContent() {
             <CardContent>
               <div className="bg-muted p-4 rounded-lg min-h-[200px] max-h-[400px] overflow-y-auto custom-scrollbar">
                 <pre className="whitespace-pre-wrap text-sm">
-                  {isLoading ? t('generating') : 
-                   messages.find(m => m.role === 'assistant')?.content || ""}
+                  {isLoading ? t('generating') :
+                    messages.find(m => m.role === 'assistant')?.content || ""}
                 </pre>
               </div>
             </CardContent>
