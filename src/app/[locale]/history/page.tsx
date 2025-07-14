@@ -16,6 +16,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { loadSavedPrompts, deleteSavedPrompt, extractVariablesFromTemplate, type SavedPrompt } from "@/lib/storage";
 import { Trash2, TestTube, Calendar, Copy } from "lucide-react";
 import { toast } from "sonner";
@@ -50,13 +56,14 @@ export default function HistoryPage() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-6xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">{t('title')}</h1>
-        <p className="text-muted-foreground">
-          {t('description')}
-        </p>
-      </div>
+    <TooltipProvider>
+      <div className="container mx-auto p-4 max-w-6xl">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">{t('title')}</h1>
+          <p className="text-muted-foreground">
+            {t('description')}
+          </p>
+        </div>
 
       {savedPrompts.length === 0 ? (
         <Card>
@@ -74,9 +81,22 @@ export default function HistoryPage() {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-lg line-clamp-1">
-                      {prompt.task}
-                    </CardTitle>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CardTitle className="text-lg line-clamp-1 cursor-help">
+                          {prompt.task}
+                        </CardTitle>
+                      </TooltipTrigger>
+                      <TooltipContent 
+                        className="max-w-md select-text"
+                        side="bottom"
+                        align="start"
+                      >
+                        <p className="whitespace-pre-wrap break-words">
+                          {prompt.task}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
                     <CardDescription className="flex items-center gap-2 mt-2">
                       <Calendar className="h-4 w-4" />
                       {formatDate(prompt.createdAt)}
@@ -160,6 +180,7 @@ export default function HistoryPage() {
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }
