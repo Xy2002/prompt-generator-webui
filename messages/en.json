@@ -96,7 +96,9 @@
     },
     "Layout": {
         "title": "Meta Prompt Generator",
-        "description": "Intelligent prompt template generation tool"
+        "description": "Intelligent prompt template generation tool powered by AI for creating professional prompt templates",
+        "keywords": "AI prompt generator, metaprompt, prompt template, AI tools, prompt engineering, template generator",
+        "author": "Meta Prompt Generator Team"
     },
     "SettingsPage": {
         "title": "Settings",

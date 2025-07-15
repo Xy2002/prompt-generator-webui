@@ -96,7 +96,9 @@
     },
     "Layout": {
         "title": "元提示生成器",
-        "description": "智能提示模板生成工具"
+        "description": "基于AI的智能提示模板生成工具，用于创建专业的提示模板",
+        "keywords": "AI提示生成器, 元提示, 提示模板, AI工具, 提示工程, 模板生成器",
+        "author": "元提示生成器团队"
     },
     "SettingsPage": {
         "title": "设置",
