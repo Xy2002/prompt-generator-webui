@@ -12,7 +12,7 @@ export default function Icon() {
     {
       status: 301,
       headers: {
-        Location: '/icon.png',
+        Location: '/icon-32.png',
       },
     }
   )

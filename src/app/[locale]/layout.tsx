@@ -69,9 +69,9 @@ export async function generateMetadata({
       ],
     },
     icons: {
-      icon: '/icon.png',
-      shortcut: '/icon.png',
-      apple: '/icon.png',
+      icon: '/icon-32.png',
+      shortcut: '/icon-32.png',
+      apple: '/apple-icon.png',
     },
     twitter: {
       card: 'summary_large_image',
@@ -107,6 +107,13 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale}>
+      <head>
+        <meta name="theme-color" content="#667eea" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="PromptGen" />
+        <link rel="apple-touch-icon" href="/apple-icon.png" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
