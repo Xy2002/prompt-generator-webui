@@ -37,6 +37,55 @@ export default async function Image() {
         >
           <div
             style={{
+              width: 120,
+              height: 120,
+              marginBottom: 40,
+              borderRadius: 20,
+              background: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <div
+              style={{
+                width: 80,
+                height: 80,
+                background: '#007BFF',
+                borderRadius: 40,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative',
+              }}
+            >
+              <div
+                style={{
+                  width: 24,
+                  height: 32,
+                  background: 'white',
+                  borderRadius: 2,
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                }}
+              />
+              <div
+                style={{
+                  width: 16,
+                  height: 2,
+                  background: '#007BFF',
+                  position: 'absolute',
+                  top: '70%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                }}
+              />
+            </div>
+          </div>
+          <div
+            style={{
               fontSize: 72,
               fontWeight: 'bold',
               marginBottom: 20,

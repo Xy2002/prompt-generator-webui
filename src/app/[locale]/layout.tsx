@@ -68,6 +68,11 @@ export async function generateMetadata({
         },
       ],
     },
+    icons: {
+      icon: '/icon.png',
+      shortcut: '/icon.png',
+      apple: '/icon.png',
+    },
     twitter: {
       card: 'summary_large_image',
       title: t('title'),
