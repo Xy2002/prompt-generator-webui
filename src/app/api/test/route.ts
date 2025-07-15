@@ -39,7 +39,8 @@ export async function POST(request: NextRequest) {
       model: openai(modelName || 'gpt-4'),
       prompt: promptWithVariables,
       maxTokens: 4096,
-      temperature: 0
+      temperature: 0,
+      abortSignal: request.signal
     });
 
     return result.toDataStreamResponse({

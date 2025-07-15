@@ -165,7 +165,8 @@ export async function POST(request: NextRequest) {
         }
       ],
       maxTokens: 4096,
-      temperature: 0
+      temperature: 0,
+      abortSignal: request.signal
     });
 
     return result.toDataStreamResponse({

@@ -49,7 +49,7 @@ function TestPageContent() {
   }, [promptId]);
 
   // 用于测试提示模板的聊天
-  const { messages, status, setMessages, append } = useChat({
+  const { messages, status, setMessages, append, stop } = useChat({
     api: "/api/test",
     onFinish: (message) => {
       // 保存测试结果
@@ -250,16 +250,27 @@ function TestPageContent() {
                   />
                 </div>
               ))}
-              <Button
-                onClick={handleTest}
-                disabled={status === 'submitted' || status === 'streaming' || !apiConfig.apiKey}
-                className="w-full"
-              >
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleTest}
+                  disabled={status === 'submitted' || status === 'streaming' || !apiConfig.apiKey}
+                  className="flex-1"
+                >
+                  {(status === 'submitted' || status === 'streaming') && (
+                    <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2"></div>
+                  )}
+                  {status === 'submitted' || status === 'streaming' ? t('testing') : t('startTest')}
+                </Button>
                 {(status === 'submitted' || status === 'streaming') && (
-                  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2"></div>
+                  <Button
+                    onClick={stop}
+                    variant="outline"
+                    className="px-4"
+                  >
+                    {t('stop')}
+                  </Button>
                 )}
-                {status === 'submitted' || status === 'streaming' ? t('testing') : t('startTest')}
-              </Button>
+              </div>
               {!apiConfig.apiKey && (
                 <p className="text-sm text-destructive">
                   {t('configureApiKey')}

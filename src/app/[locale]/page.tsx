@@ -276,16 +276,27 @@ export default function Home() {
                 onChange={(e) => setVariables(e.target.value)}
               />
             </div>
-            <Button
-              onClick={handleGenerate}
-              disabled={!task.trim() || !apiKey.trim() || generateChat.status === 'submitted' || generateChat.status === 'streaming'}
-              className="w-full"
-            >
+            <div className="flex gap-2">
+              <Button
+                onClick={handleGenerate}
+                disabled={!task.trim() || !apiKey.trim() || generateChat.status === 'submitted' || generateChat.status === 'streaming'}
+                className="flex-1"
+              >
+                {(generateChat.status === 'submitted' || generateChat.status === 'streaming') && (
+                  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2"></div>
+                )}
+                {generateChat.status === 'submitted' || generateChat.status === 'streaming' ? t('generating') : t('generateTemplate')}
+              </Button>
               {(generateChat.status === 'submitted' || generateChat.status === 'streaming') && (
-                <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2"></div>
+                <Button
+                  onClick={generateChat.stop}
+                  variant="outline"
+                  className="px-4"
+                >
+                  {t('stop')}
+                </Button>
               )}
-              {generateChat.status === 'submitted' || generateChat.status === 'streaming' ? t('generating') : t('generateTemplate')}
-            </Button>
+            </div>
           </CardContent>
         </Card>
 
